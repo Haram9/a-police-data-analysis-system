@@ -27,7 +27,7 @@ public class main_db {
     private void loadData() {
         System.out.println("Loading Stop and Search Data...");
         
-        // Load only North Yorkshire Police files
+       
         String[] files = {
         	"C:\\Users\\DELL\\git\\a-police-data-analysis-system\\database\\src\\main\\java\\main_db\\2025-06-south-yorkshire-stop-and-search.csv",
         	"C:\\Users\\DELL\\git\\a-police-data-analysis-system\\database\\src\\main\\java\\main_db\\2025-07-south-yorkshire-stop-and-search.csv",
@@ -80,13 +80,13 @@ public class main_db {
         String[] fields = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         
         if (fields.length < 15) {
-            return null; // Invalid record
+            return null; 
         }
         
         try {
             StopSearchRecord record = new StopSearchRecord();
             
-            // Parse basic fields
+          
             record.type = getField(fields, 0);
             record.date = parseDate(getField(fields, 1));
             record.gender = getField(fields, 6);
@@ -99,7 +99,7 @@ public class main_db {
             record.outcomeLinked = parseBoolean(getField(fields, 13));
             record.removalOfClothing = parseBoolean(getField(fields, 14));
             
-            // Parse location if available
+          
             String latStr = getField(fields, 4);
             String lonStr = getField(fields, 5);
             if (!latStr.isEmpty() && !lonStr.isEmpty()) {
@@ -107,7 +107,7 @@ public class main_db {
                     record.latitude = Double.parseDouble(latStr);
                     record.longitude = Double.parseDouble(lonStr);
                 } catch (NumberFormatException e) {
-                    // Keep as null if parsing fails
+                    
                 }
             }
             
@@ -171,7 +171,7 @@ public class main_db {
         }
     }
     
-    // Feature A: List all distinct search purposes
+  
     private void featureA() {
         System.out.println("\n--- Distinct Search Purposes ---");
         Set<String> purposes = new TreeSet<>();
@@ -192,11 +192,11 @@ public class main_db {
         }
     }
     
-    // Feature B: Output details of ALL searches for a specified purpose
+    
     private void featureB() {
         System.out.println("\n--- Search by Purpose ---");
         
-        // Show available purposes first
+       
         Set<String> purposes = new TreeSet<>();
         for (StopSearchRecord record : records) {
             if (!record.objectOfSearch.isEmpty()) {
@@ -242,7 +242,7 @@ public class main_db {
         }
     }
     
-    // Feature C: Analyze search outcomes
+    
     private void featureC() {
         System.out.println("\n--- Search Outcome Analysis ---");
         
@@ -313,7 +313,7 @@ public class main_db {
         return outcome.contains("no further action") || outcome.isEmpty();
     }
     
-    // Feature D: Find legislation with highest frequency
+  
     private void featureD() {
         System.out.println("\n--- Legislation Analysis ---");
         System.out.print("Enter month (1-12): ");
@@ -329,7 +329,7 @@ public class main_db {
             return;
         }
         
-        // D.i: Highest frequency legislation
+       
         Map<String, Integer> legislationCount = new HashMap<>();
         for (StopSearchRecord record : records) {
             if (record.date != null && record.date.getMonthValue() == month && 
@@ -347,7 +347,7 @@ public class main_db {
             return;
         }
         
-        // D.ii: Highest successful frequency legislation
+        
         Map<String, Integer> successfulLegislationCount = new HashMap<>();
         for (StopSearchRecord record : records) {
             if (record.date != null && record.date.getMonthValue() == month && 
@@ -363,7 +363,7 @@ public class main_db {
         }
     }
     
-    // Feature E: Ethnic group analysis
+   
     private void featureE() {
         System.out.println("\n--- Ethnic Group Analysis ---");
         System.out.println("1. For specific month");
@@ -422,7 +422,7 @@ public class main_db {
     }
     
     private void ethnicAnalysisByLegislation() {
-        // Show available legislations
+        
         Set<String> legislations = new TreeSet<>();
         for (StopSearchRecord record : records) {
             if (!record.legislation.isEmpty()) {
@@ -474,20 +474,67 @@ public class main_db {
         }
     }
     
-    // Feature F: Reverse chronological order for ethnic group from E.i
+  
+ 
     private void featureF() {
         System.out.println("\n--- Reverse Chronological Order ---");
-        System.out.print("Enter ethnic group: ");
-        String ethnicGroup = scanner.nextLine();
+        
+        
+        Set<String> ethnicities = new TreeSet<>();
+        for (StopSearchRecord record : records) {
+            if (!record.selfDefinedEthnicity.isEmpty()) {
+                ethnicities.add(record.selfDefinedEthnicity);
+            }
+        }
+        
+        System.out.println("Available ethnic groups:");
+        List<String> ethnicityList = new ArrayList<>(ethnicities);
+        for (int i = 0; i < ethnicityList.size(); i++) {
+            System.out.println((i + 1) + ". " + ethnicityList.get(i));
+        }
+        
+        System.out.print("Enter ethnicity number or name: ");
+        String input = scanner.nextLine().trim();
+        
+        String selectedEthnicity;
+        try {
+            int index = Integer.parseInt(input) - 1;
+            if (index >= 0 && index < ethnicityList.size()) {
+                selectedEthnicity = ethnicityList.get(index);
+            } else {
+                System.out.println("Invalid number.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            selectedEthnicity = input;
+        }
         
         List<StopSearchRecord> ethnicRecords = new ArrayList<>();
         for (StopSearchRecord record : records) {
-            if (record.selfDefinedEthnicity.equalsIgnoreCase(ethnicGroup)) {
+            if (record.selfDefinedEthnicity != null && 
+                record.selfDefinedEthnicity.equalsIgnoreCase(selectedEthnicity)) {
                 ethnicRecords.add(record);
             }
         }
         
-        // Sort by date descending
+       
+        if (ethnicRecords.isEmpty()) {
+            System.out.println("No exact matches found. Trying partial match...");
+            for (StopSearchRecord record : records) {
+                if (record.selfDefinedEthnicity != null && 
+                    record.selfDefinedEthnicity.toLowerCase().contains(selectedEthnicity.toLowerCase())) {
+                    ethnicRecords.add(record);
+                }
+            }
+        }
+        
+        if (ethnicRecords.isEmpty()) {
+            System.out.println("No records found for ethnicity: " + selectedEthnicity);
+            System.out.println("Available ethnicities are case-sensitive. Try one from the list above.");
+            return;
+        }
+        
+    
         ethnicRecords.sort((r1, r2) -> {
             if (r1.date == null && r2.date == null) return 0;
             if (r1.date == null) return 1;
@@ -495,13 +542,15 @@ public class main_db {
             return r2.date.compareTo(r1.date);
         });
         
-        System.out.println("Found " + ethnicRecords.size() + " records for " + ethnicGroup);
+        System.out.println("\nFound " + ethnicRecords.size() + " records for: " + selectedEthnicity);
+        System.out.println("Displaying in reverse chronological order (newest first):\n");
+        
         for (StopSearchRecord record : ethnicRecords) {
             printRecordDetails(record);
         }
     }
     
-    // Feature G: Custom multi-attribute search
+    
     private void featureG() {
         System.out.println("\n--- Custom Multi-Attribute Search ---");
         
