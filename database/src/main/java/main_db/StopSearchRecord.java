@@ -1,8 +1,7 @@
 package main_db;
-
 import java.time.LocalDateTime;
 
-class StopSearchRecord {
+public class StopSearchRecord {
     String type;
     LocalDateTime date;
     String gender;
@@ -16,4 +15,10 @@ class StopSearchRecord {
     Boolean removalOfClothing;
     Double latitude;
     Double longitude;
+
+   
+    public String toString() {
+        return String.format("[%s] %s, %s, %s, %s, Legislation: %s, Outcome: %s",
+            date, gender, ageRange, objectOfSearch, selfDefinedEthnicity, legislation, outcome);
+    }
 }

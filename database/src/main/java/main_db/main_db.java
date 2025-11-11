@@ -29,10 +29,14 @@ public class main_db {
         
        
         String[] files = {
-        	"C:\\Users\\sadia\\git\\a-police-data-analysis-system\\database\\src\\main\\java\\main_db\\2025-06-south-yorkshire-stop-and-search.csv",
-        	"C:\\Users\\sadia\\git\\a-police-data-analysis-system\\database\\src\\main\\java\\main_db\\2025-07-south-yorkshire-stop-and-search.csv",
-        	"C:\\Users\\sadia\\git\\a-police-data-analysis-system\\database\\src\\main\\java\\main_db\\2025-08-south-yorkshire-stop-and-search.csv",
-        	"C:\\Users\\sadia\\git\\a-police-data-analysis-system\\database\\src\\main\\java\\main_db\\2025-09-south-yorkshire-stop-and-search.csv"
+        	"C:\\Users\\DELL\\git\\a-police-data-analysis-system\\database\\src\\main\\java\\main_db\\2025-06-cheshire-stop-and-search.csv",
+        	"C:\\Users\\DELL\\git\\a-police-data-analysis-system\\database\\src\\main\\java\\main_db\\2025-07-cheshire-stop-and-search.csv",
+        	"C:\\Users\\DELL\\git\\a-police-data-analysis-system\\database\\src\\main\\java\\main_db\\2025-08-cheshire-stop-and-search.csv",
+        	"C:\\Users\\DELL\\git\\a-police-data-analysis-system\\database\\src\\main\\java\\main_db\\2025-09-cheshire-stop-and-search.csv",
+        	"C:\\Users\\DELL\\git\\a-police-data-analysis-system\\database\\src\\main\\java\\main_db\\2025-06-merseyside-stop-and-search.csv",
+        	"C:\\Users\\DELL\\git\\a-police-data-analysis-system\\database\\src\\main\\java\\main_db\\2025-07-merseyside-stop-and-search.csv",
+        	"C:\\Users\\DELL\\git\\a-police-data-analysis-system\\database\\src\\main\\java\\main_db\\2025-08-merseyside-stop-and-search.csv",
+        	"C:\\Users\\DELL\\git\\a-police-data-analysis-system\\database\\src\\main\\java\\main_db\\2025-09-merseyside-stop-and-search.csv",
         };
         
         int totalRecords = 0;
@@ -77,18 +81,17 @@ public class main_db {
     }
     
     private StopSearchRecord parseCSVLine(String line) {
+      
         String[] fields = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-        
-        if (fields.length < 15) {
-            return null; 
-        }
-        
+
+        if (fields.length < 15) return null;
+
+        StopSearchRecord record = new StopSearchRecord();
         try {
-            StopSearchRecord record = new StopSearchRecord();
-            
-          
             record.type = getField(fields, 0);
             record.date = parseDate(getField(fields, 1));
+            record.latitude = parseDouble(getField(fields, 4));
+            record.longitude = parseDouble(getField(fields, 5));
             record.gender = getField(fields, 6);
             record.ageRange = getField(fields, 7);
             record.selfDefinedEthnicity = getField(fields, 8);
@@ -98,46 +101,44 @@ public class main_db {
             record.outcome = getField(fields, 12);
             record.outcomeLinked = parseBoolean(getField(fields, 13));
             record.removalOfClothing = parseBoolean(getField(fields, 14));
-            
-          
-            String latStr = getField(fields, 4);
-            String lonStr = getField(fields, 5);
-            if (!latStr.isEmpty() && !lonStr.isEmpty()) {
-                try {
-                    record.latitude = Double.parseDouble(latStr);
-                    record.longitude = Double.parseDouble(lonStr);
-                } catch (NumberFormatException e) {
-                    
-                }
-            }
-            
-            return record;
-            
         } catch (Exception e) {
+            System.err.println("Error parsing record: " + e.getMessage());
             return null;
         }
+        return record;
     }
-    
+
     private String getField(String[] fields, int index) {
-        if (index < fields.length && !fields[index].isEmpty()) {
-            return fields[index].trim();
+        if (index < fields.length && fields[index] != null) {
+            return fields[index].trim().replace("\"", "");
         }
         return "";
     }
-    
+
     private LocalDateTime parseDate(String dateStr) {
         if (dateStr == null || dateStr.isEmpty()) return null;
         try {
-            return LocalDateTime.parse(dateStr.replace("+00:00", ""));
+            dateStr = dateStr.replace("+00:00", "");
+            return LocalDateTime.parse(dateStr);
         } catch (Exception e) {
             return null;
         }
     }
-    
+
+    private Double parseDouble(String value) {
+        try {
+            if (value == null || value.isEmpty()) return null;
+            return Double.parseDouble(value);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     private Boolean parseBoolean(String boolStr) {
         if (boolStr == null || boolStr.isEmpty()) return null;
-        return boolStr.equalsIgnoreCase("True");
+        return boolStr.equalsIgnoreCase("TRUE") || boolStr.equalsIgnoreCase("Yes");
     }
+
     
     private void showMenu() {
         while (true) {
