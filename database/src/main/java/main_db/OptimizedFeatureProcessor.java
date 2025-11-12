@@ -127,10 +127,10 @@ public class OptimizedFeatureProcessor {
         recordsSortedByDate.sort((a, b) -> {
             if (a.date == null) return 1;
             if (b.date == null) return -1;
-            return b.date.compareTo(a.date); // Descending
+            return b.date.compareTo(a.date); 
         });
         
-        // Pre-sort ethnicity records
+       
         ethnicitySortedCache = new HashMap<>();
         for (Map.Entry<String, List<StopSearchRecord>> entry : ethnicityIndex.entrySet()) {
             List<StopSearchRecord> sorted = new ArrayList<>(entry.getValue());
