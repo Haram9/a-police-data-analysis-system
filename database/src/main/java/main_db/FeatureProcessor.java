@@ -226,9 +226,8 @@ public class FeatureProcessor {
         List<StopSearchRecord> results = new ArrayList<>();
 
         for (StopSearchRecord r : records) {
-
             boolean ok = true;
-
+            
             String gender = r.gender.trim().toLowerCase();
             String ageRange = r.ageRange.trim().toLowerCase();
             String ethnicity = r.selfDefinedEthnicity.trim().toLowerCase();
@@ -248,8 +247,10 @@ public class FeatureProcessor {
             if (!obj_.isEmpty() && !object.contains(obj_)) ok = false;
 
 
+
             if (ok) results.add(r);
         }
+
 
         System.out.println("Matches: " + results.size());
 
