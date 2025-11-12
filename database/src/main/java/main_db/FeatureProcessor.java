@@ -226,17 +226,30 @@ public class FeatureProcessor {
         List<StopSearchRecord> results = new ArrayList<>();
 
         for (StopSearchRecord r : records) {
-
             boolean ok = true;
 
-            if (!g.isEmpty() && !r.gender.equalsIgnoreCase(g)) ok = false;
-            if (!a.isEmpty() && !r.ageRange.equalsIgnoreCase(a)) ok = false;
-            if (!e.isEmpty() && !r.selfDefinedEthnicity.toLowerCase().contains(e.toLowerCase())) ok = false;
-            if (!o.isEmpty() && !r.outcome.toLowerCase().contains(o.toLowerCase())) ok = false;
-            if (!obj.isEmpty() && !r.objectOfSearch.toLowerCase().contains(obj.toLowerCase())) ok = false;
+            // Normalize both record and input strings
+            String gender = r.gender.trim().toLowerCase();
+            String ageRange = r.ageRange.trim().toLowerCase();
+            String ethnicity = r.selfDefinedEthnicity.trim().toLowerCase();
+            String outcome = r.outcome.trim().toLowerCase();
+            String object = r.objectOfSearch.trim().toLowerCase();
+
+            String g_ = g.trim().toLowerCase();
+            String a_ = a.trim().toLowerCase();
+            String e_ = e.trim().toLowerCase();
+            String o_ = o.trim().toLowerCase();
+            String obj_ = obj.trim().toLowerCase();
+
+            if (!g_.isEmpty() && !gender.contains(g_)) ok = false;
+            if (!a_.isEmpty() && !ageRange.contains(a_)) ok = false;
+            if (!e_.isEmpty() && !ethnicity.contains(e_)) ok = false;
+            if (!o_.isEmpty() && !outcome.contains(o_)) ok = false;
+            if (!obj_.isEmpty() && !object.contains(obj_)) ok = false;
 
             if (ok) results.add(r);
         }
+
 
         System.out.println("Matches: " + results.size());
 
