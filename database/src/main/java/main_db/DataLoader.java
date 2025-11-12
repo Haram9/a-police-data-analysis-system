@@ -53,7 +53,7 @@ public class DataLoader {
         if (fields.length < 15) return null;
 
         try {
-            StopSearchRecord r = new StopSearchRecord();
+            StopSearchRecord r = new StopSearchRecord(line, null, line, line, line, line, line, line, line, null, null, null, null);
 
             r.type = getField(fields, 0);
             r.date = parseDate(getField(fields, 1));
