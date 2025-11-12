@@ -8,7 +8,7 @@ public class OptimizedFeatureProcessor {
     private List<StopSearchRecord> records;
     private Scanner scanner;
     
-    // Indexes for O(1) lookups
+    
     private Map<String, List<StopSearchRecord>> purposeIndex;
     private Map<String, List<StopSearchRecord>> ethnicityIndex;
     private Map<String, List<StopSearchRecord>> legislationIndex;
@@ -211,11 +211,12 @@ public class OptimizedFeatureProcessor {
             case "2": partlySuccessful.forEach(this::printRecord); break;
             case "3": unsuccessful.forEach(this::printRecord); break;
         }
+        
     }
 
     /* ========== OPTIMIZED FEATURE D (O(1) cache lookup) ========== */
     public void featureD() {
-        System.out.print("Enter month (1-12): ");
+        System.out.print("Enter month (6-9): ");
         int month = Integer.parseInt(scanner.nextLine());
         
         System.out.print("Enter year (e.g., 2025): ");
@@ -393,7 +394,7 @@ public class OptimizedFeatureProcessor {
                 results = new ArrayList<>(records);
         }
 
-        // Filter results from smallest set
+      
         List<StopSearchRecord> finalResults = results.stream()
             .filter(r -> gender.isEmpty() || r.gender.equalsIgnoreCase(gender))
             .filter(r -> ageRange.isEmpty() || r.ageRange.equalsIgnoreCase(ageRange))
@@ -448,6 +449,54 @@ public class OptimizedFeatureProcessor {
                 .map(Map.Entry::getKey)
                 .orElse(null);
     }
+    
+    /* ========== GETTER METHODS FOR PROFILING ========== */
+ // These are needed for the profiling code to access the indexes
+ public Map<String, List<StopSearchRecord>> getPurposeIndex() {
+     return purposeIndex;
+ }
+
+ public Map<String, List<StopSearchRecord>> getEthnicityIndex() {
+     return ethnicityIndex;
+ }
+
+ public Map<String, List<StopSearchRecord>> getLegislationIndex() {
+     return legislationIndex;
+ }
+
+ public Map<String, List<StopSearchRecord>> getGenderIndex() {
+     return genderIndex;
+ }
+
+ public Map<String, List<StopSearchRecord>> getAgeRangeIndex() {
+     return ageRangeIndex;
+ }
+
+ public Map<String, List<StopSearchRecord>> getOutcomeIndex() {
+     return outcomeIndex;
+ }
+
+ public Map<String, Map<String, Integer>> getMonthlyLegislationCache() {
+     return monthlyLegislationCache;
+ }
+
+ public Map<String, Map<String, Integer>> getMonthlyEthnicityCache() {
+     return monthlyEthnicityCache;
+ }
+
+ public Map<String, String> getMostFrequentLegislationCache() {
+     return mostFrequentLegislationCache;
+ }
+
+ public List<StopSearchRecord> getRecordsSortedByDate() {
+     return recordsSortedByDate;
+ }
+
+ public Map<String, List<StopSearchRecord>> getEthnicitySortedCache() {
+     return ethnicitySortedCache;
+ }
+ 
+ 
 
     private void printRecord(StopSearchRecord r) {
         System.out.println("\nDate: " + (r.date != null ? r.date : "Unknown"));

@@ -4,7 +4,7 @@ import java.util.*;
 
 public class FeatureProcessor {
 
-    private List<StopSearchRecord> records;
+    List<StopSearchRecord> records;
     private Scanner scanner;
 
     public FeatureProcessor(List<StopSearchRecord> records, Scanner scanner) {
@@ -105,7 +105,7 @@ public class FeatureProcessor {
     /* ---------------------- FEATURE D ---------------------- */
     public void featureD() {
 
-        System.out.print("Enter month (1-12): ");
+        System.out.print("Enter month (6-9): ");
         int month = Integer.parseInt(scanner.nextLine());
 
         Map<String, Integer> freq = new HashMap<>();
@@ -229,11 +229,24 @@ public class FeatureProcessor {
 
             boolean ok = true;
 
-            if (!g.isEmpty() && !r.gender.equalsIgnoreCase(g)) ok = false;
-            if (!a.isEmpty() && !r.ageRange.equalsIgnoreCase(a)) ok = false;
-            if (!e.isEmpty() && !r.selfDefinedEthnicity.toLowerCase().contains(e.toLowerCase())) ok = false;
-            if (!o.isEmpty() && !r.outcome.toLowerCase().contains(o.toLowerCase())) ok = false;
-            if (!obj.isEmpty() && !r.objectOfSearch.toLowerCase().contains(obj.toLowerCase())) ok = false;
+            String gender = r.gender.trim().toLowerCase();
+            String ageRange = r.ageRange.trim().toLowerCase();
+            String ethnicity = r.selfDefinedEthnicity.trim().toLowerCase();
+            String outcome = r.outcome.trim().toLowerCase();
+            String object = r.objectOfSearch.trim().toLowerCase();
+
+            String g_ = g.trim().toLowerCase();
+            String a_ = a.trim().toLowerCase();
+            String e_ = e.trim().toLowerCase();
+            String o_ = o.trim().toLowerCase();
+            String obj_ = obj.trim().toLowerCase();
+
+            if (!g_.isEmpty() && !gender.contains(g_)) ok = false;
+            if (!a_.isEmpty() && !ageRange.contains(a_)) ok = false;
+            if (!e_.isEmpty() && !ethnicity.contains(e_)) ok = false;
+            if (!o_.isEmpty() && !outcome.contains(o_)) ok = false;
+            if (!obj_.isEmpty() && !object.contains(obj_)) ok = false;
+
 
             if (ok) results.add(r);
         }
@@ -244,7 +257,36 @@ public class FeatureProcessor {
         if (scanner.nextLine().equalsIgnoreCase("y"))
             results.forEach(this::printRecord);
     }
+    
+    
+    
+    /* ---------------------- PROFILING VERSION (NO USER INPUT) ---------------------- */
+    public void featureC_profiling() {
+        // Same logic but no user interaction
+        int success = 0, partial = 0, fail = 0;
+        
+        for (StopSearchRecord r : records) {
+            if (isSuccessful(r)) success++;
+            else if (isPartlySuccessful(r)) partial++;
+            else if (isUnsuccessful(r)) fail++;
+            
+            
+        }
 
+    }
+
+    public void featureB_profiling(String purpose) {
+        // Test search without user interaction
+        int count = 0;
+        for (StopSearchRecord r : records) {
+            if (r.objectOfSearch.equalsIgnoreCase(purpose)) {
+                count++;
+            }
+        }
+       
+    }
+
+    
     /* ---------------------- UTILS ---------------------- */
     private String findMax(Map<String, Integer> map) {
 
