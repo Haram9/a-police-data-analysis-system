@@ -3,8 +3,9 @@ package main_db;
 import java.util.*;
 
 public class MenuHandler {
-
+	// Scanner for user input from the console
     private Scanner scanner;
+ // Processor for basic (linear) data analysis operations
     private FeatureProcessor basicProcessor;
     private OptimizedFeatureProcessor optimizedProcessor;
     private List<StopSearchRecord> records;
@@ -14,7 +15,12 @@ public class MenuHandler {
         this.records = records;
         this.basicProcessor = new FeatureProcessor(records, scanner);
     }
-
+    /**
+     * Displays the main menu and lets the user choose between:
+     * - Basic version (linear search)
+     * - Optimized version (indexed and cached)
+     * - Exit option
+     */
     public void showMenu() {
         while (true) {
             System.out.println("\n=== Police Stop & Search Analysis ===");
@@ -24,7 +30,7 @@ public class MenuHandler {
             System.out.print("Choose implementation: ");
 
             String choice = scanner.nextLine().toUpperCase();
-
+         // Handle user choice using a switch statement
             switch (choice) {
                 case "1": 
                     showBasicMenu(); 
@@ -40,7 +46,10 @@ public class MenuHandler {
             }
         }
     }
-
+    /**
+     * Displays the menu for the Basic Version (Linear Search).
+     * Calls corresponding features implemented in the FeatureProcessor class.
+     */
     private void showBasicMenu() {
         while (true) {
             System.out.println("\n=== BASIC VERSION (Linear Search) ===");
@@ -55,7 +64,7 @@ public class MenuHandler {
             System.out.print("Choose feature: ");
 
             String choice = scanner.nextLine().toUpperCase();
-
+         // Execute the corresponding feature based on user choice
             switch (choice) {
                 case "A": 
                     basicProcessor.featureA(); 
@@ -85,7 +94,10 @@ public class MenuHandler {
             }
         }
     }
-
+    /**
+     * Displays the menu for the Optimized Version.
+     * Uses indexed and cached data for faster performance.
+     */
     private void showOptimizedMenu() {
         if (optimizedProcessor == null) {
             System.out.println("Building indexes and caches...");
@@ -128,7 +140,7 @@ public class MenuHandler {
                 case "G": 
                     optimizedProcessor.featureG(); 
                     break;
-                case "BACK": 
+                case "EXIT": 
                     return;
                 default: 
                     System.out.println("Invalid choice! Please enter A-G or BACK.");

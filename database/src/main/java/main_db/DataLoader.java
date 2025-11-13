@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class DataLoader {
+	/**
+     * Loads Stop and Search data from multiple CSV files into memory.
+     */
 
     public List<StopSearchRecord> loadFiles(String[] files) {
 
@@ -12,14 +15,15 @@ public class DataLoader {
         int totalRecords = 0, failedRecords = 0;
 
         System.out.println("Loading Stop and Search Data...");
-
+     // Loop through each provided file path
         for (String filename : files) {
             File file = new File(filename);
+            // Skip missing files
             if (!file.exists()) {
                 System.err.println("File not found: " + filename);
                 continue;
             }
-
+            // Try reading file line by line
             try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                 String line;
                 boolean first = true;
@@ -39,7 +43,7 @@ public class DataLoader {
                 }
             } catch (Exception ignore) {}
         }
-
+     // Summary of loading results
         System.out.println("Loaded: " + totalRecords);
         System.out.println("Failed: " + failedRecords);
         System.out.println("Total in memory: " + records.size());
@@ -48,13 +52,13 @@ public class DataLoader {
     }
 
     private StopSearchRecord parseCSVLine(String line) {
-
+    	// Split line by commas, ignoring commas inside quotes
         String[] fields = line.split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1);
         if (fields.length < 15) return null;
 
         try {
             StopSearchRecord r = new StopSearchRecord(line, null, line, line, line, line, line, line, line, null, null, null, null);
-
+         // Assign parsed values to record fields
             r.type = getField(fields, 0);
             r.date = parseDate(getField(fields, 1));
             r.gender = getField(fields, 6);
@@ -81,9 +85,13 @@ public class DataLoader {
 
         } catch (Exception e) {
             return null;
+            
         }
     }
-
+    /**
+     * Safely retrieves a field value by index from an array.
+     * Trims whitespace and handles missing fields.
+     */
     private String getField(String[] f, int i) {
         if (i < f.length && !f[i].isEmpty()) return f[i].trim();
         return "";

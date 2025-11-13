@@ -3,15 +3,20 @@ package main_db;
 import java.time.LocalDateTime;
 
 public class StopSearchRecord {
+	// Type of stop and search (e.g., "Person search", "Vehicle search")
     String type;
+ // Date and time when the stop and search occurred
     LocalDateTime date;
     String gender;
     String ageRange;
+ // Ethnicity as self-defined by the individual
     String selfDefinedEthnicity;
     String officerDefinedEthnicity;
+ // The legislation under which the search was carried out
     String legislation;
     String objectOfSearch;
     String outcome;
+ // Indicates whether the outcome was linked to the object of the search
     Boolean outcomeLinked;
     Boolean removalOfClothing;
     Double latitude;
@@ -36,6 +41,14 @@ public class StopSearchRecord {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+    /**
+     * Returns a formatted string representation of this record.
+     * 
+     * Example output:
+     * [2020-01-01T10:30] Male, 18-24, Drugs, White, Legislation: Misuse of Drugs Act, Outcome: Arrest
+     *
+     * @return A readable summary of the stop and search record
+     */
 
     public String toString() {
         return String.format("[%s] %s, %s, %s, %s, Legislation: %s, Outcome: %s",
