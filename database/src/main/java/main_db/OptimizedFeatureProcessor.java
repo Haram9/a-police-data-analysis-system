@@ -21,7 +21,7 @@ public class OptimizedFeatureProcessor {
     private Map<String, Map<String, Integer>> monthlyEthnicityCache;
     private Map<String, String> mostFrequentLegislationCache;
     
-    // Pre-sorted collections
+ 
     private List<StopSearchRecord> recordsSortedByDate;
     private Map<String, List<StopSearchRecord>> ethnicitySortedCache;
 
@@ -95,14 +95,12 @@ public class OptimizedFeatureProcessor {
             if (record.date != null) {
                 String monthKey = record.date.getMonthValue() + "-" + record.date.getYear();
                 
-                // Cache legislation counts by month
                 if (!record.legislation.isEmpty()) {
                     monthlyLegislationCache
                         .computeIfAbsent(monthKey, k -> new HashMap<>())
                         .merge(record.legislation, 1, Integer::sum);
                 }
                 
-                // Cache ethnicity counts by month
                 if (!record.selfDefinedEthnicity.isEmpty()) {
                     monthlyEthnicityCache
                         .computeIfAbsent(monthKey, k -> new HashMap<>())
@@ -111,7 +109,6 @@ public class OptimizedFeatureProcessor {
             }
         }
         
-        // Precompute most frequent legislation per month
         for (String monthKey : monthlyLegislationCache.keySet()) {
             mostFrequentLegislationCache.put(monthKey, 
                 findMaxKey(monthlyLegislationCache.get(monthKey)));
@@ -122,7 +119,7 @@ public class OptimizedFeatureProcessor {
     private void preSortData() {
         System.out.println("Pre-sorting data...");
         
-        // Pre-sort all records by date
+    
         recordsSortedByDate = new ArrayList<>(records);
         recordsSortedByDate.sort((a, b) -> {
             if (a.date == null) return 1;
@@ -137,7 +134,7 @@ public class OptimizedFeatureProcessor {
             sorted.sort((a, b) -> {
                 if (a.date == null) return 1;
                 if (b.date == null) return -1;
-                return b.date.compareTo(a.date); // Descending
+                return b.date.compareTo(a.date); 
             });
             ethnicitySortedCache.put(entry.getKey(), sorted);
         }
@@ -155,7 +152,7 @@ public class OptimizedFeatureProcessor {
     public void featureB() {
         System.out.println("\n--- Search by Purpose (Optimized) ---");
         
-        // Show available purposes from index
+        
         List<String> purposes = new ArrayList<>(purposeIndex.keySet());
         for (int i = 0; i < purposes.size(); i++) {
             System.out.println((i + 1) + ". " + purposes.get(i) + 
@@ -172,7 +169,7 @@ public class OptimizedFeatureProcessor {
             purpose = input.toLowerCase();
         }
 
-        // O(1) lookup instead of O(n) search
+       
         List<StopSearchRecord> matches = purposeIndex.getOrDefault(purpose, new ArrayList<>());
         
         System.out.println("Found: " + matches.size() + " records (O(1) lookup)");
@@ -187,12 +184,12 @@ public class OptimizedFeatureProcessor {
     public void featureC() {
         System.out.println("\n--- Outcome Analysis (Optimized) ---");
 
-        // Use outcome index for faster filtering
+       
         List<StopSearchRecord> successful = new ArrayList<>();
         List<StopSearchRecord> partlySuccessful = new ArrayList<>();
         List<StopSearchRecord> unsuccessful = new ArrayList<>();
 
-        // Check outcomes from index first
+        
         for (List<StopSearchRecord> outcomeRecords : outcomeIndex.values()) {
             for (StopSearchRecord record : outcomeRecords) {
                 if (isSuccessful(record)) successful.add(record);
@@ -224,7 +221,6 @@ public class OptimizedFeatureProcessor {
         
         String monthKey = month + "-" + year;
 
-        // O(1) cache lookup instead of O(n) calculation
         Map<String, Integer> legislationCounts = monthlyLegislationCache.get(monthKey);
         
         if (legislationCounts == null) {
@@ -236,7 +232,7 @@ public class OptimizedFeatureProcessor {
         System.out.println("Most frequent legislation: " + topLegislation + 
             " (" + legislationCounts.get(topLegislation) + " records) - (Cached result)");
 
-        // Show successful legislation using cache
+       
         Map<String, Integer> successfulCounts = new HashMap<>();
         for (StopSearchRecord record : records) {
             if (record.date != null && 
@@ -276,7 +272,6 @@ public class OptimizedFeatureProcessor {
         
         String monthKey = month + "-" + year;
 
-        // O(1) cache lookup
         Map<String, Integer> ethnicityCounts = monthlyEthnicityCache.get(monthKey);
         
         if (ethnicityCounts == null) {
@@ -297,7 +292,6 @@ public class OptimizedFeatureProcessor {
     }
 
     private void ethnicByLawOptimized() {
-        // Show available legislations from index
         List<String> laws = new ArrayList<>(legislationIndex.keySet());
         for (int i = 0; i < laws.size(); i++) {
             System.out.println((i + 1) + ". " + laws.get(i) + 
@@ -314,10 +308,8 @@ public class OptimizedFeatureProcessor {
             law = input.toLowerCase();
         }
 
-        // O(1) lookup for legislation records
+      
         List<StopSearchRecord> lawRecords = legislationIndex.getOrDefault(law, new ArrayList<>());
-        
-        // Count ethnicities using indexed data
         Map<String, Integer> ethnicityCounts = new HashMap<>();
         for (StopSearchRecord record : lawRecords) {
             if (!record.selfDefinedEthnicity.isEmpty()) {
@@ -336,7 +328,6 @@ public class OptimizedFeatureProcessor {
     public void featureF() {
         System.out.println("\n--- Reverse Chronological by Ethnicity (Optimized) ---");
 
-        // Show available ethnicities from index
         List<String> ethnicities = new ArrayList<>(ethnicityIndex.keySet());
         for (int i = 0; i < ethnicities.size(); i++) {
             System.out.println((i + 1) + ". " + ethnicities.get(i) + 
@@ -353,7 +344,6 @@ public class OptimizedFeatureProcessor {
             ethnicity = input.toLowerCase();
         }
 
-        // O(1) lookup of pre-sorted records (no sorting needed!)
         List<StopSearchRecord> matches = ethnicitySortedCache.getOrDefault(ethnicity, new ArrayList<>());
         
         System.out.println("Found: " + matches.size() + " records (Pre-sorted, O(1) access)");
@@ -370,7 +360,7 @@ public class OptimizedFeatureProcessor {
         System.out.print("Outcome: "); String outcome = scanner.nextLine();
         System.out.print("Object: "); String object = scanner.nextLine();
 
-        // Start with smallest index for optimal performance
+       
         List<StopSearchRecord> results = null;
         String smallestIndex = findSmallestIndex(gender, ageRange, ethnicity, outcome, object);
         
@@ -451,7 +441,6 @@ public class OptimizedFeatureProcessor {
     }
     
     /* ========== GETTER METHODS FOR PROFILING ========== */
- // These are needed for the profiling code to access the indexes
  public Map<String, List<StopSearchRecord>> getPurposeIndex() {
      return purposeIndex;
  }

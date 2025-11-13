@@ -1,7 +1,6 @@
 package main_db;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class main_db {
     
@@ -30,10 +29,8 @@ public class main_db {
         String choice = scanner.nextLine();
         
         if (choice.equals("2")) {
-            // Run profiling mode
             profileAllFeatures(records);
         } else {
-            // Run normal application
             MenuHandler menu = new MenuHandler(records, scanner);
             menu.showMenu();
         }
@@ -41,13 +38,12 @@ public class main_db {
         scanner.close();
     }
     
-    // ADD THIS PROFILING METHOD - IT'S MISSING FROM YOUR CURRENT CODE//
     public static void profileAllFeatures(List<StopSearchRecord> records) {
         System.out.println("=== NETBEANS PROFILING MODE ===");
         System.out.println("Dataset size: " + records.size() + " records");
         System.out.println("Starting performance profiling...\n");
         
-        // Create processors (Scanner is dummy for profiling)
+
         FeatureProcessor basic = new FeatureProcessor(records, new Scanner(System.in));
         OptimizedFeatureProcessor optimized = new OptimizedFeatureProcessor(records, new Scanner(System.in));
         
@@ -59,7 +55,6 @@ public class main_db {
         
         System.out.println("🔄 Running Feature B (Search by Purpose)...");
         for (int i = 0; i < 50; i++) {
-            // Simulate search without user input
             simulateFeatureB(basic, optimized, "Controlled drugs");
             simulateFeatureB(basic, optimized, "Offensive weapons");
         }
@@ -83,20 +78,16 @@ public class main_db {
         System.out.println("✅ PROFILING COMPLETE - Check NetBeans Profiler results!");
     }
 
-    // ADD THESE HELPER METHODS FOR PROFILING
+    
     private static void simulateFeatureB(FeatureProcessor basic, OptimizedFeatureProcessor optimized, String purpose) {
-        // Basic version simulation
         int count = 0;
         for (StopSearchRecord r : basic.records) {
             if (r.objectOfSearch.equalsIgnoreCase(purpose)) count++;
         }
-        
-        // Optimized version simulation
         List<StopSearchRecord> results = optimized.getPurposeIndex().getOrDefault(purpose.toLowerCase(), new ArrayList<>());
     }
 
     private static void simulateFeatureD(FeatureProcessor basic, OptimizedFeatureProcessor optimized) {
-        // Test for June 2025
         Map<String, Integer> freq = new HashMap<>();
         for (StopSearchRecord r : basic.records) {
             if (r.date != null && r.date.getMonthValue() == 6 && !r.legislation.isEmpty()) {
@@ -108,7 +99,6 @@ public class main_db {
     }
 
     private static void simulateFeatureF(FeatureProcessor basic, OptimizedFeatureProcessor optimized) {
-        // Test for "White" ethnicity
         List<StopSearchRecord> basicResults = new ArrayList<>();
         for (StopSearchRecord r : basic.records) {
             if (r.selfDefinedEthnicity.toLowerCase().contains("white")) {

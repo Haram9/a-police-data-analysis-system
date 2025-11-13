@@ -263,21 +263,17 @@ public class FeatureProcessor {
     
     /* ---------------------- PROFILING VERSION (NO USER INPUT) ---------------------- */
     public void featureC_profiling() {
-        // Same logic but no user interaction
+
         int success = 0, partial = 0, fail = 0;
         
         for (StopSearchRecord r : records) {
             if (isSuccessful(r)) success++;
             else if (isPartlySuccessful(r)) partial++;
-            else if (isUnsuccessful(r)) fail++;
-            
-            
+            else if (isUnsuccessful(r)) fail++;   
         }
-
     }
 
     public void featureB_profiling(String purpose) {
-        // Test search without user interaction
         int count = 0;
         for (StopSearchRecord r : records) {
             if (r.objectOfSearch.equalsIgnoreCase(purpose)) {
